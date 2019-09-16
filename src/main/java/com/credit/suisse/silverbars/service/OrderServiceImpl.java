@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.groupingBy;
 @Slf4j
@@ -43,11 +44,11 @@ public class OrderServiceImpl implements OrderService {
         List<String> sortedOrders = new ArrayList<>();
 
         List<Order> orders = orderRepository.findAll();
+
         List<Order> buyOrdersSorted = orders.stream()
                 .filter(o -> "BUY".equalsIgnoreCase(o.getType()))
-                .sorted(Comparator.comparing(Order::getPricePerKg))
+                .sorted(Comparator.comparing(Order::getPricePerKg, Comparator.reverseOrder()))
                 .collect(Collectors.toList());
-        Collections.reverse(buyOrdersSorted);
 
         List<Order> sellOrdersSorted = orders.stream()
                 .filter(o -> "SELL".equalsIgnoreCase(o.getType()))
@@ -55,9 +56,11 @@ public class OrderServiceImpl implements OrderService {
                 .collect(Collectors.toList());
 
 
-        sellOrdersSorted.addAll(buyOrdersSorted);
+        List<Order> sortedOrdersList = Stream.
+                of(sellOrdersSorted, buyOrdersSorted)
+                .flatMap(List::stream).collect(Collectors.toList());
 
-        Map<String, Map<Double, Double>> liveBoard = sellOrdersSorted.stream()
+        Map<String, Map<Double, Double>> liveBoard = sortedOrdersList.stream()
                 .collect(groupingBy(Order::getType, groupingBy(Order::getPricePerKg, LinkedHashMap::new,
                 Collectors.summingDouble(Order::getQuantity))));
 
