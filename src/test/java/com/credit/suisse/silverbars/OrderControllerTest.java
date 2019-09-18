@@ -9,9 +9,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -38,9 +36,8 @@ public class OrderControllerTest {
 
         Order order = new Order(1L,2.5,310.0, "BUY");
         Order createdOrder = new Order(1L,1L,2.5,310.0, "BUY");
-        ResponseEntity<Order> orderResponse = new ResponseEntity<>(createdOrder, HttpStatus.OK);
 
-        given(service.createOrder(order)).willReturn(orderResponse);
+        given(service.createOrder(order)).willReturn(createdOrder);
 
 
         mvc.perform(post("/order")
@@ -54,9 +51,7 @@ public class OrderControllerTest {
     @Test
     public void testCancelOrder() throws Exception{
 
-        ResponseEntity<String> orderResponse = new ResponseEntity<>("Order with id 1 has been cancelled successfully", HttpStatus.OK);
-
-        given(service.cancelOrder(1L)).willReturn(orderResponse);
+        given(service.cancelOrder(1L)).willReturn("Order with id 1 has been cancelled successfully");
 
          mvc.perform(delete("/order/1"))
                            .andExpect(status().isOk())

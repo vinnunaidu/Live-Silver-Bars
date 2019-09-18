@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
@@ -59,18 +58,15 @@ public class OrderServiceTest {
     @Test
     public void testCreateOrder(){
         Order order = new Order(1L,2.5,310.0, "BUY");
-        ResponseEntity<Order> savedOrder = orderService.createOrder(order);
-        assertThat(savedOrder.getBody()).isEqualTo(order);
+        assertThat(orderService.createOrder(order)).isEqualTo(order);
     }
 
     @Test
     public void testCancelOrder(){
         Order order = new Order(1L,2.5,310.0, "BUY");
-        ResponseEntity<Order> savedOrder = orderService.createOrder(order);
-        assertThat(savedOrder.getBody()).isEqualTo(order);
+        assertThat(orderService.createOrder(order)).isEqualTo(order);
 
-        ResponseEntity<String> cancelledMsg = orderService.cancelOrder(1L);
-        assertEquals("Order with id 1 has been cancelled successfully", cancelledMsg.getBody());
+        assertEquals("Order with id 1 has been cancelled successfully", orderService.cancelOrder(1L));
     }
 
     @Test
@@ -83,8 +79,7 @@ public class OrderServiceTest {
         orderService.createOrder(order);
         orderService.createOrder(order1);
 
-        ResponseEntity<OrderSummary> orderSummaryResponseEntity = orderService.getOrderSummary();
-        OrderSummary orderSummary = orderSummaryResponseEntity.getBody();
+        OrderSummary orderSummary = orderService.getOrderSummary();
 
         assert orderSummary != null;
         assertEquals(2, orderSummary.getOrders().size());
