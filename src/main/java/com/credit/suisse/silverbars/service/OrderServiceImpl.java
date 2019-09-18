@@ -6,8 +6,6 @@ import com.credit.suisse.silverbars.repository.OrderRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -21,26 +19,24 @@ public class OrderServiceImpl implements OrderService {
     private OrderRepository orderRepository;
 
     @Override
-    public ResponseEntity<Order> createOrder(Order order) {
-        Order orderSaved = orderRepository.save(order);
-        return new ResponseEntity<>(orderSaved, HttpStatus.OK);
+    public Order createOrder(Order order) {
+        return orderRepository.save(order);
     }
 
     @Override
-    public ResponseEntity<String> cancelOrder(Long orderId) {
+    public String cancelOrder(Long orderId) {
         try{
             orderRepository.deleteById(orderId);
+            return String.format("Order with id %d has been cancelled successfully", orderId);
         }catch(EmptyResultDataAccessException emptyResultDataAccessException){
-            return new ResponseEntity<>(String.format("Order with id %d does not exist ", orderId), HttpStatus.OK);
+            return String.format("Order with id %d does not exist ", orderId);
         }
-
-        return new ResponseEntity<>(String.format("Order with id %d has been cancelled successfully", orderId), HttpStatus.OK);
     }
 
     // Streams facilitate chaining of intermediary process operations and a terminal operation to process any collection.
     // This way it is more readable and eliminates traditional boilerplate and verbose code which is difficult to understand at a glance, because of multiple nested control-flow statements
     @Override
-    public ResponseEntity<OrderSummary> getOrderSummary() {
+    public OrderSummary getOrderSummary() {
         List<String> sortedOrders = new ArrayList<>();
 
         List<Order> orders = orderRepository.findAll();
@@ -71,6 +67,6 @@ public class OrderServiceImpl implements OrderService {
         OrderSummary orderSummary = new OrderSummary();
         orderSummary.setOrders(sortedOrders);
 
-        return new ResponseEntity<>(orderSummary, HttpStatus.OK);
+        return orderSummary;
     }
 }

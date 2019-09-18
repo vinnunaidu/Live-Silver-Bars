@@ -4,6 +4,7 @@ import com.credit.suisse.silverbars.entities.Order;
 import com.credit.suisse.silverbars.model.OrderSummary;
 import com.credit.suisse.silverbars.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,19 +18,18 @@ public class OrderController {
     @PostMapping()
     public ResponseEntity<Order> createOrder(@RequestBody Order order){
 
-        return orderService.createOrder(order);
+        return new ResponseEntity<>(orderService.createOrder(order), HttpStatus.OK);
 
     }
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<String> cancelOrder(@PathVariable Long id){
-        return orderService.cancelOrder(id);
+        return new ResponseEntity<>(orderService.cancelOrder(id), HttpStatus.OK);
 
     }
 
     @GetMapping(value = "/ordersSummary")
     public ResponseEntity<OrderSummary> getOrderSummary(){
-
-        return orderService.getOrderSummary();
+        return new ResponseEntity<>(orderService.getOrderSummary(), HttpStatus.OK);
     }
 }
